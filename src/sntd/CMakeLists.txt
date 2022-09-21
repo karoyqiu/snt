@@ -1,10 +1,15 @@
 ﻿add_executable(sntd
-  main.cpp
+    "main.cpp"
+    "server.h" "server.cpp"
+    "session.h" "session.cpp"
 )
+
+target_precompile_headers(sntd PRIVATE "stable.h")
 target_link_libraries(sntd PRIVATE
-  asio asio::asio
-  OpenSSL::SSL OpenSSL::Crypto
+    asio asio::asio
+    OpenSSL::SSL OpenSSL::Crypto
 )
+
 target_compile_options(sntd PRIVATE ${PROJECT_WARNING_FLAGS})
 
 if(WIN32)

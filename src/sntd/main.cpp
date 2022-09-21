@@ -11,7 +11,8 @@
  *
  **************************************************************************************************/
 #include <iostream>
-#include <asio.hpp>
+
+#include "server.h"
 
 
 int main(int argc, char *argv[])
@@ -21,6 +22,7 @@ int main(int argc, char *argv[])
     try
     {
         asio::io_context ctx;
+        server s(ctx, 8849);
         ctx.run();
     }
     catch (std::exception &e)
