@@ -65,6 +65,7 @@ check_warning_flags(PROJECT_WARNING_FLAGS)
 
 # 第三方库
 find_package(asio CONFIG REQUIRED)
+find_package(yaml-cpp CONFIG REQUIRED)
 find_package(OpenSSL REQUIRED)
 
 #include(EnableFolder)

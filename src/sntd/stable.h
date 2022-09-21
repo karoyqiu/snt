@@ -12,3 +12,5 @@
  **************************************************************************************************/
 #pragma once
 #include <asio.hpp>
+#include <boost/predef.h>
+#include <yaml-cpp/yaml.h>

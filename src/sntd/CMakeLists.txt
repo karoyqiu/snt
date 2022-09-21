@@ -7,6 +7,7 @@
 target_precompile_headers(sntd PRIVATE "stable.h")
 target_link_libraries(sntd PRIVATE
     asio asio::asio
+    yaml-cpp
     OpenSSL::SSL OpenSSL::Crypto
 )
 

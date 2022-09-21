@@ -11,6 +11,7 @@
  *
  **************************************************************************************************/
 #include <iostream>
+#include <yaml-cpp/yaml.h>
 
 #include "server.h"
 
@@ -21,8 +22,14 @@ int main(int argc, char *argv[])
 
     try
     {
+        const auto config = YAML::LoadFile("config.yaml");
+        const auto &core = config["core"];
+        const auto host = core["host"].as<std::string>();
+        const auto port = core["port"].as<uint16_t>();
+        std::cout << "Listening on " << host << ":" << port << std::endl;
+
         asio::io_context ctx;
-        server s(ctx, 8849);
+        server s(ctx, host, port);
         ctx.run();
     }
     catch (std::exception &e)

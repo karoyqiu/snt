@@ -19,7 +19,7 @@ using asio::ip::tcp;
 class server
 {
 public:
-    server(asio::io_context& ctx, uint16_t port);
+    server(asio::io_context &ctx, const std::string &host, uint16_t port);
 
 private:
     void do_accept();

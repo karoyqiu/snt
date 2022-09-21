@@ -14,8 +14,8 @@
 #include "session.h"
 
 
-server::server(asio::io_context& ctx, uint16_t port)
-    : acceptor_(ctx, tcp::endpoint(asio::ip::address_v4::loopback(), port))
+server::server(asio::io_context& ctx, const std::string &host, uint16_t port)
+    : acceptor_(ctx, tcp::endpoint(asio::ip::make_address(host), port))
     , socket_(ctx)
 {
     do_accept();

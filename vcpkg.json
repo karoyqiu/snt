@@ -4,7 +4,9 @@
   "dependencies": [
     {
       "name": "asio",
-      "features": ["openssl"]
-    }
+      "features": [ "openssl" ]
+    },
+    "boost-predef",
+    "yaml-cpp"
   ]
 }
