@@ -12,11 +12,24 @@
  **************************************************************************************************/
 #include "session.h"
 
+#include "messages.h"
+#include "listen_session.h"
+
 
 session::session(tcp::socket &&socket)
     : socket_(std::move(socket))
+    , seq_(0)
 {
     memset(data_, 0, sizeof(data_));
+}
+
+
+session::~session()
+{
+    for (auto *s : listeners_)
+    {
+        delete s;
+    }
 }
 
 
@@ -26,9 +39,35 @@ void session::do_read()
     socket_.async_read_some(asio::buffer(data_, sizeof(data_)),
         [this, self](std::error_code ec, std::size_t length)
         {
-            if (!ec)
+            if (ec)
             {
-                do_write(length);
+                return;
+            }
+
+            // 主会话的消息总是带校验和
+            const auto *msg = reinterpret_cast<snt::checksum_message_t *>(data_);
+
+            if (msg->magic != snt::MAGIC || !snt::verify_checksum(msg))
+            {
+                return;
+            }
+
+            switch (msg->command)
+            {
+            
+            case snt::command_t::LISTEN:
+            {
+                const auto *lm = static_cast<const snt::listen_request_t *>(msg);
+                auto *l = new listen_session(this, lm->protocol, lm->port);
+                listeners_.push_back(l);
+                do_write(msg->size);
+                break;
+            }
+
+            case snt::command_t::CONNECT:
+                break;
+            default:
+                break;
             }
         }
     );

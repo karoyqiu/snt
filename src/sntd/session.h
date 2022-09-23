@@ -11,16 +11,21 @@
  *
  **************************************************************************************************/
 #pragma once
+#include <atomic>
 #include <memory>
+#include <vector>
 #include <asio.hpp>
 
 using asio::ip::tcp;
+
+class listen_session;
 
 
 class session : public std::enable_shared_from_this<session>
 {
 public:
     explicit session(tcp::socket&& socket);
+    virtual ~session();
 
     void start() { do_read(); };
 
@@ -30,6 +35,8 @@ private:
 
 private:
     tcp::socket socket_;
+    std::atomic_uint32_t seq_;
+    std::vector<listen_session *> listeners_;
     enum { MAX_LENGHT = 1024 * 2 };
     uint8_t data_[MAX_LENGHT];
 };
