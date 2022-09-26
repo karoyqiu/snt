@@ -8,6 +8,7 @@ flatbuffers_generate_headers(
 
 add_library(sntcommon
   "messages.h" "messages.cpp"
+  "keyed_logger.h"
 )
 target_compile_options(sntcommon PUBLIC ${PROJECT_WARNING_FLAGS})
 target_precompile_headers(sntcommon PUBLIC

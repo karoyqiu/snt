@@ -17,6 +17,8 @@
 #include <asio.hpp>
 #include <flatbuffers/flatbuffer_builder.h>
 
+#include "keyed_logger.h"
+
 using asio::ip::tcp;
 
 class listen_session;
@@ -38,6 +40,7 @@ private:
 
 private:
     tcp::socket socket_;
+    const keyed_logger logger_;
     std::atomic_uint32_t seq_;
     std::vector<listen_session *> listeners_;
     enum { MAX_LENGHT = 1024 * 2 };

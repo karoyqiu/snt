@@ -21,16 +21,17 @@
 
 session::session(tcp::socket &&socket)
     : socket_(std::move(socket))
+    , logger_(socket_.remote_endpoint().address().to_string() + ":" + std::to_string(socket_.remote_endpoint().port()))
     , seq_(0)
 {
-    spdlog::debug("Client session started: {}:{}", socket_.remote_endpoint().address().to_string(), socket_.remote_endpoint().port());
+    logger_.info("Client session started");
     memset(data_, 0, sizeof(data_));
 }
 
 
 session::~session()
 {
-    spdlog::debug("Client session ended: {}:{}", socket_.remote_endpoint().address().to_string(), socket_.remote_endpoint().port());
+    logger_.info("Client session ended");
 
     for (auto *s : listeners_)
     {
@@ -60,7 +61,7 @@ void session::send_response(const flatbuffers::FlatBufferBuilder &builder)
             }
             else
             {
-                spdlog::error("Failed to write: {}", err.message());
+                logger_.error("Failed to write: {}", err.message());
             }
         }
     );
@@ -75,7 +76,7 @@ void session::do_read()
         {
             if (err)
             {
-                spdlog::error("Failed to read: {}", err.message());
+                logger_.error("Failed to read: {}", err.message());
                 return;
             }
 
@@ -84,7 +85,7 @@ void session::do_read()
 
             if (msg->magic != snt::COMMAND_MAGIC)
             {
-                spdlog::error("Magic mismatch");
+                logger_.error("Magic mismatch");
                 return;
             }
 
@@ -92,7 +93,7 @@ void session::do_read()
 
             if (!snt::verify_checksum(cmd))
             {
-                spdlog::error("Failed to verify checksum");
+                logger_.error("Failed to verify checksum");
                 return;
             }
 
@@ -101,7 +102,7 @@ void session::do_read()
 
             if (!snt::VerifyRequestBuffer(verifier))
             {
-                spdlog::error("Failed to verify buffer");
+                logger_.error("Failed to verify buffer");
                 return;
             }
 
@@ -111,10 +112,12 @@ void session::do_read()
 
             switch (req->body_type())
             {
-            
+
             case snt::RequestBody_ListenRequest:
             {
                 auto *body = req->body_as_ListenRequest();
+                logger_.info("Listening channel requested on port {}", body->port());
+
                 auto *l = new listen_session(this, body->protocol(), body->port());
                 listeners_.push_back(l);
                 do_write(msg->size);
@@ -122,7 +125,7 @@ void session::do_read()
             }
 
             default:
-                spdlog::error("Unknown body type {}", req->body_type());
+                logger_.error("Unknown body type {}", req->body_type());
                 break;
             }
         }

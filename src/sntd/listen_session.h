@@ -15,6 +15,8 @@
 
 #include <sntcommon_generated.h>
 
+#include "keyed_logger.h"
+
 using asio::ip::tcp;
 
 class session;
@@ -35,8 +37,9 @@ class listen_session
      static std::atomic_uint32_t seq_;
 
      session *parent_;
+     const uint32_t channel_id_;
+     const keyed_logger logger_;
      asio::io_context ctx_;
      tcp::acceptor acceptor_;
      tcp::socket socket_;
-     const uint32_t channel_id_;
 };

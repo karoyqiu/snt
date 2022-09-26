@@ -24,12 +24,13 @@ std::atomic_uint32_t listen_session::seq_(0);
 
 listen_session::listen_session(session *parent, snt::Protocol protocol, uint16_t port)
     : parent_(parent)
+    , channel_id_(++seq_)
+    , logger_("Channel " + std::to_string(channel_id_))
     , acceptor_(ctx_, tcp::endpoint(asio::ip::address_v4::any(), port))
     , socket_(ctx_)
-    , channel_id_(++seq_)
 {
     assert(parent && protocol == snt::Protocol_Tcp && port != 0);
-    spdlog::info("Listening channel {} on port {}", channel_id_, port);
+    logger_.info("Listening on port {}", port);
     do_accept();
 
     flatbuffers::FlatBufferBuilder builder;
@@ -44,7 +45,7 @@ listen_session::listen_session(session *parent, snt::Protocol protocol, uint16_t
 
 listen_session::~listen_session()
 {
-    spdlog::info("Listening channel {} ended", channel_id_);
+    logger_.info("Listening ended");
 }
 
 
