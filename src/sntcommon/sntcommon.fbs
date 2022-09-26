@@ -1,0 +1,11 @@
+namespace snt;
+
+enum Protocol : short {
+  Tcp,
+}
+
+table Head {
+  seq: uint32;
+  nonce: uint32;
+  timestamp: uint64;
+}

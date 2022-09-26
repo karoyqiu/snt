@@ -1,0 +1,18 @@
+include "sntcommon.fbs";
+
+namespace snt;
+
+table ListenResponse {
+  channel_id: uint32;
+}
+
+union ResponseBody {
+  ListenResponse,
+}
+
+table Response {
+  head: Head;
+  body: ResponseBody;
+}
+
+root_type Response;

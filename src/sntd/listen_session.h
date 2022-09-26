@@ -10,9 +10,10 @@
  * \copyright   © 2022 Roy QIU。
  *
  **************************************************************************************************/
+#include <atomic>
 #include <asio.hpp>
 
-#include "messages.h"
+#include <sntcommon_generated.h>
 
 using asio::ip::tcp;
 
@@ -22,14 +23,19 @@ class session;
 class listen_session
  {
  public:
- 	listen_session(session *parent, snt::protocol_t protocol, uint16_t port);
+ 	listen_session(session *parent, snt::Protocol protocol, uint16_t port);
+
+    uint32_t channel_id() const { return channel_id_; }
 
  private:
      void do_accept();
  	
  private:
+     static std::atomic_uint32_t seq_;
+
      session *parent_;
      asio::io_context ctx_;
      tcp::acceptor acceptor_;
      tcp::socket socket_;
+     const uint32_t channel_id_;
 };

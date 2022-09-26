@@ -12,6 +12,9 @@
  **************************************************************************************************/
 #include "session.h"
 
+#include <sntrequest_generated.h>
+#include <sntresponse_generated.h>
+
 #include "messages.h"
 #include "listen_session.h"
 
@@ -33,6 +36,30 @@ session::~session()
 }
 
 
+void session::send_response(const flatbuffers::FlatBufferBuilder &builder)
+{
+    auto self(shared_from_this());
+
+    auto *msg = reinterpret_cast<snt::command_message_t *>(data_);
+    msg->magic = snt::COMMAND_MAGIC;
+    msg->size = offsetof(snt::command_message_t, body) + builder.GetSize();
+    assert(msg->size <= MAX_LENGHT);
+    memset(msg->checksum, 0, sizeof(msg->checksum));
+    memcpy(msg->body, builder.GetBufferPointer(), builder.GetSize());
+    snt::sign(msg);
+
+    asio::async_write(socket_, asio::buffer(data_, msg->size),
+        [this, self](std::error_code ec, std::size_t /*length*/)
+        {
+            if (!ec)
+            {
+                do_read();
+            }
+        }
+    );
+}
+
+
 void session::do_read()
 {
     auto self(shared_from_this());
@@ -45,27 +72,44 @@ void session::do_read()
             }
 
             // 主会话的消息总是带校验和
-            const auto *msg = reinterpret_cast<snt::checksum_message_t *>(data_);
+            const auto *msg = reinterpret_cast<snt::message_t *>(data_);
 
-            if (msg->magic != snt::MAGIC || !snt::verify_checksum(msg))
+            if (msg->magic != snt::COMMAND_MAGIC)
             {
                 return;
             }
 
-            switch (msg->command)
+            const auto *cmd = static_cast<const snt::command_message_t *>(msg);
+
+            if (!snt::verify_checksum(cmd))
+            {
+                return;
+            }
+
+            const auto body_size = snt::get_body_size(cmd);
+            flatbuffers::Verifier verifier(cmd->body, body_size);
+
+            if (!snt::VerifyRequestBuffer(verifier))
+            {
+                return;
+            }
+
+            auto *req = snt::GetRequest(cmd->body);
+
+            // UNDONE: 检查时间戳和随机数
+
+            switch (req->body_type())
             {
             
-            case snt::command_t::LISTEN:
+            case snt::RequestBody_ListenRequest:
             {
-                const auto *lm = static_cast<const snt::listen_request_t *>(msg);
-                auto *l = new listen_session(this, lm->protocol, lm->port);
+                auto *body = req->body_as_ListenRequest();
+                auto *l = new listen_session(this, body->protocol(), body->port());
                 listeners_.push_back(l);
                 do_write(msg->size);
                 break;
             }
 
-            case snt::command_t::CONNECT:
-                break;
             default:
                 break;
             }

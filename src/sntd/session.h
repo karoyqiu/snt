@@ -15,6 +15,7 @@
 #include <memory>
 #include <vector>
 #include <asio.hpp>
+#include <flatbuffers/flatbuffer_builder.h>
 
 using asio::ip::tcp;
 
@@ -28,6 +29,8 @@ public:
     virtual ~session();
 
     void start() { do_read(); };
+
+    void send_response(const flatbuffers::FlatBufferBuilder &builder);
 
 private:
     void do_read();

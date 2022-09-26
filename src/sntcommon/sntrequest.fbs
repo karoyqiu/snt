@@ -1,0 +1,19 @@
+include "sntcommon.fbs";
+
+namespace snt;
+
+table ListenRequest {
+  protocol: Protocol = Tcp;
+  port: ushort;
+}
+
+union RequestBody {
+  ListenRequest,
+}
+
+table Request {
+  head: Head;
+  body: RequestBody;
+}
+
+root_type Request;

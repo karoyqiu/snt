@@ -13,4 +13,5 @@
 #pragma once
 #include <boost/predef.h>
 #include <asio.hpp>
+#include <flatbuffers/flatbuffers.h>
 #include <yaml-cpp/yaml.h>

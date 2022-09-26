@@ -31,10 +31,10 @@ void set_checksum_key(const void *key, size_t size)
 }
 
 
-bool verify_checksum(const checksum_message_t *message)
+bool verify_checksum(const command_message_t *message)
 {
     auto buffer = std::make_unique<uint8_t[]>(message->size);
-    auto *copy = reinterpret_cast<checksum_message_t *>(buffer.get());
+    auto *copy = reinterpret_cast<command_message_t *>(buffer.get());
     memcpy(copy, message, message->size);
     sign(copy);
 
@@ -42,7 +42,7 @@ bool verify_checksum(const checksum_message_t *message)
 }
 
 
-void sign(checksum_message_t *message)
+void sign(command_message_t *message)
 {
     memset(message->checksum, 0, sizeof(message->checksum));
 
@@ -54,6 +54,12 @@ void sign(checksum_message_t *message)
         message->size, output, &output_length);
     assert(p && output_length == sizeof(message->checksum));
     memcpy(message->checksum, p, output_length);
+}
+
+
+uint32_t get_body_size(const command_message_t *cmd)
+{
+    return cmd->size - offsetof(command_message_t, body);
 }
 
 

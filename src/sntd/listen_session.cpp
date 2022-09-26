@@ -14,14 +14,29 @@
 
 #include <cassert>
 
+#include <sntresponse_generated.h>
 
-listen_session::listen_session(session *parent, snt::protocol_t protocol, uint16_t port)
+#include "session.h"
+
+std::atomic_uint32_t listen_session::seq_(0);
+
+
+listen_session::listen_session(session *parent, snt::Protocol protocol, uint16_t port)
     : parent_(parent)
     , acceptor_(ctx_, tcp::endpoint(asio::ip::address_v4::any(), port))
     , socket_(ctx_)
+    , channel_id_(++seq_)
 {
-    assert(parent && protocol == snt::protocol_t::TCP && port != 0);
+    assert(parent && protocol == snt::Protocol_Tcp && port != 0);
     do_accept();
+
+    flatbuffers::FlatBufferBuilder builder;
+    auto head = snt::CreateHead(builder, 0, 0, 0);
+    auto body = snt::CreateListenResponse(builder, channel_id_);
+    auto resp = snt::CreateResponse(builder, head, snt::ResponseBody_ListenResponse, body.Union());
+    builder.Finish(resp);
+
+    parent->send_response(builder);
 }
 
 

@@ -21,59 +21,31 @@
 
 namespace snt {
 
-/// Magic 数
-static const uint32_t MAGIC = 0xb8cba0ef;
+/// 用于命令消息的 Magic 数
+static const uint32_t COMMAND_MAGIC = 0xb8cba0ef;
+
+/// 用于数据消息的 Magic 数
+static const uint32_t DATA_MAGIC = 0xb0beae2c;
 
 
 #pragma pack(push, 4)
 
-/// 命令
-enum class command_t : uint32_t
-{
-    /// 无效
-    INVALID,
-    /// 监听端口
-    LISTEN,
-    /// 连接服务器
-    CONNECT,
-};
-
 /// 基本消息结构
 struct message_t
 {
-    /// Magic 数，必须为 `MAGIC`
+    /// Magic 数，必须为 `COMMAND_MAGIC` 或 `DATA_MAGIC`
     uint32_t magic;
     /// 结构体总大小，字节
     uint32_t size;
-    /// 消息序号
-    uint32_t seq;
-    /// 命令
-    command_t command;
 };
 
 /// 需要校验的消息结构
-struct checksum_message_t : message_t
+struct command_message_t : message_t
 {
     /// 整个消息的 HMAC-SHA256 校验和，计算时用 0 填充
     uint8_t checksum[32];
-};
-
-/// 支持的连接协议
-enum class protocol_t : uint32_t
-{
-    /// 无效
-    INVALID,
-    /// 服务端监听 TCP 端口
-    TCP,
-};
-
-/// 监听端口消息
-struct listen_request_t : checksum_message_t
-{
-    /// 监听协议
-    protocol_t protocol;
-    /// 监听端口
-    uint16_t port;
+    /// 消息数据
+    uint8_t body[1];
 };
 
 #pragma pack(pop)
@@ -94,7 +66,7 @@ void set_checksum_key(const void *key, size_t size);
  *
  * @return 如果校验和一致，则返回 `true`；否则返回 `false`。
 */
-bool verify_checksum(const checksum_message_t *message);
+bool verify_checksum(const command_message_t *message);
 
 
 /*!
@@ -102,7 +74,9 @@ bool verify_checksum(const checksum_message_t *message);
  *
  * @param[in]   message     要计算的消息
 */
-void sign(checksum_message_t *message);
+void sign(command_message_t *message);
+
+uint32_t get_body_size(const command_message_t *cmd);
 
 
 }   // namespace snt
