@@ -23,12 +23,15 @@ session::session(tcp::socket &&socket)
     : socket_(std::move(socket))
     , seq_(0)
 {
+    spdlog::debug("Client session started: {}:{}", socket_.remote_endpoint().address().to_string(), socket_.remote_endpoint().port());
     memset(data_, 0, sizeof(data_));
 }
 
 
 session::~session()
 {
+    spdlog::debug("Client session ended: {}:{}", socket_.remote_endpoint().address().to_string(), socket_.remote_endpoint().port());
+
     for (auto *s : listeners_)
     {
         delete s;
@@ -49,11 +52,15 @@ void session::send_response(const flatbuffers::FlatBufferBuilder &builder)
     snt::sign(msg);
 
     asio::async_write(socket_, asio::buffer(data_, msg->size),
-        [this, self](std::error_code ec, std::size_t /*length*/)
+        [this, self](const std::error_code &err, std::size_t /*length*/)
         {
-            if (!ec)
+            if (!err)
             {
                 do_read();
+            }
+            else
+            {
+                spdlog::error("Failed to write: {}", err.message());
             }
         }
     );
@@ -64,10 +71,11 @@ void session::do_read()
 {
     auto self(shared_from_this());
     socket_.async_read_some(asio::buffer(data_, sizeof(data_)),
-        [this, self](std::error_code ec, std::size_t length)
+        [this, self](const std::error_code &err, std::size_t length)
         {
-            if (ec)
+            if (err)
             {
+                spdlog::error("Failed to read: {}", err.message());
                 return;
             }
 
@@ -76,6 +84,7 @@ void session::do_read()
 
             if (msg->magic != snt::COMMAND_MAGIC)
             {
+                spdlog::error("Magic mismatch");
                 return;
             }
 
@@ -83,6 +92,7 @@ void session::do_read()
 
             if (!snt::verify_checksum(cmd))
             {
+                spdlog::error("Failed to verify checksum");
                 return;
             }
 
@@ -91,6 +101,7 @@ void session::do_read()
 
             if (!snt::VerifyRequestBuffer(verifier))
             {
+                spdlog::error("Failed to verify buffer");
                 return;
             }
 
@@ -111,6 +122,7 @@ void session::do_read()
             }
 
             default:
+                spdlog::error("Unknown body type {}", req->body_type());
                 break;
             }
         }

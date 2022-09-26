@@ -10,9 +10,17 @@ add_library(sntcommon
   "messages.h" "messages.cpp"
 )
 target_compile_options(sntcommon PUBLIC ${PROJECT_WARNING_FLAGS})
+target_precompile_headers(sntcommon PUBLIC
+  "<asio.hpp>"
+  "<boost/predef.h>"
+  "<flatbuffers/flatbuffers.h>"
+  "<spdlog/spdlog.h>"
+  "<yaml-cpp/yaml.h>"
+)
 target_include_directories(sntcommon PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(sntcommon PUBLIC
   flatbuffers::flatbuffers
+  spdlog::spdlog spdlog::spdlog_header_only
   OpenSSL::Crypto
   sntfbs
 )

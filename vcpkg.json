@@ -8,6 +8,7 @@
     },
     "boost-predef",
     "flatbuffers",
+    "spdlog",
     "yaml-cpp"
   ]
 }

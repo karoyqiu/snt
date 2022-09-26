@@ -25,6 +25,7 @@ public:
 
 private:
     void handle_resolve(const asio::error_code &err, const tcp::resolver::results_type &endpoints);
+    void handle_connect(const asio::error_code &err);
 
 private:
     tcp::resolver resolver_;

@@ -6,8 +6,13 @@ table ListenResponse {
   channel_id: uint32;
 }
 
+table ConnectResponse {
+  conn_id: uint32;
+}
+
 union ResponseBody {
   ListenResponse,
+  ConnectResponse,
 }
 
 table Response {

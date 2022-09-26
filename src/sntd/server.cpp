@@ -24,12 +24,16 @@ server::server(asio::io_context& ctx, const std::string &host, uint16_t port)
 
 void server::do_accept()
 {
-    acceptor_.async_accept(socket_, [this](std::error_code ec)
+    acceptor_.async_accept(socket_, [this](const asio::error_code &err)
         {
-            if (!ec)
+            if (!err)
             {
                 auto s = std::make_shared<session>(std::move(socket_));
                 s->start();
+            }
+            else
+            {
+                spdlog::error("Failed to accept: {}", err.message());
             }
 
             do_accept();

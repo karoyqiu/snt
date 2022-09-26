@@ -57,6 +57,25 @@ void sign(command_message_t *message)
 }
 
 
+size_t build_command_message(uint8_t *out, size_t size, const flatbuffers::FlatBufferBuilder &builder)
+{
+    auto *msg = reinterpret_cast<snt::command_message_t *>(out);
+    msg->magic = snt::COMMAND_MAGIC;
+    msg->size = offsetof(snt::command_message_t, body) + builder.GetSize();
+
+    if (msg->size > size)
+    {
+        return 0;
+    }
+
+    memset(msg->checksum, 0, sizeof(msg->checksum));
+    memcpy(msg->body, builder.GetBufferPointer(), builder.GetSize());
+    snt::sign(msg);
+
+    return msg->size;
+}
+
+
 uint32_t get_body_size(const command_message_t *cmd)
 {
     return cmd->size - offsetof(command_message_t, body);

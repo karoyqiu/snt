@@ -24,6 +24,7 @@ class listen_session
  {
  public:
  	listen_session(session *parent, snt::Protocol protocol, uint16_t port);
+    virtual ~listen_session();
 
     uint32_t channel_id() const { return channel_id_; }
 

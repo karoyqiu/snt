@@ -14,6 +14,7 @@
 
 #include <cassert>
 
+#include <sntrequest_generated.h>
 #include <sntresponse_generated.h>
 
 #include "session.h"
@@ -28,6 +29,7 @@ listen_session::listen_session(session *parent, snt::Protocol protocol, uint16_t
     , channel_id_(++seq_)
 {
     assert(parent && protocol == snt::Protocol_Tcp && port != 0);
+    spdlog::info("Listening channel {} on port {}", channel_id_, port);
     do_accept();
 
     flatbuffers::FlatBufferBuilder builder;
@@ -40,13 +42,25 @@ listen_session::listen_session(session *parent, snt::Protocol protocol, uint16_t
 }
 
 
+listen_session::~listen_session()
+{
+    spdlog::info("Listening channel {} ended", channel_id_);
+}
+
+
 void listen_session::do_accept()
 {
     acceptor_.async_accept(socket_, [this](std::error_code ec)
         {
             if (!ec)
             {
-                
+                flatbuffers::FlatBufferBuilder builder;
+                auto head = snt::CreateHead(builder, 0, 0, 0);
+                auto body = snt::CreateConnectRequest(builder, channel_id_);
+                auto resp = snt::CreateResponse(builder, head, snt::ResponseBody_ListenResponse, body.Union());
+                builder.Finish(resp);
+
+                parent_->send_response(builder);
             }
 
             do_accept();

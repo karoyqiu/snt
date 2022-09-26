@@ -12,11 +12,7 @@
  **************************************************************************************************/
 #pragma once
 #include <cstdint>
-#include <boost/predef/other/endian.h>
-
-#if BOOST_ENDIAN_BIG_WORD || BOOST_ENDIAN_BIG_BYTE
-#error Big-endian is not supported.
-#endif
+#include <flatbuffers/flatbuffer_builder.h>
 
 
 namespace snt {
@@ -75,6 +71,9 @@ bool verify_checksum(const command_message_t *message);
  * @param[in]   message     要计算的消息
 */
 void sign(command_message_t *message);
+
+
+size_t build_command_message(uint8_t *out, size_t size, const flatbuffers::FlatBufferBuilder &builder);
 
 uint32_t get_body_size(const command_message_t *cmd);
 

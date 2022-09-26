@@ -7,8 +7,13 @@ table ListenRequest {
   port: ushort;
 }
 
+table ConnectRequest {
+  channel_id: uint32;
+}
+
 union RequestBody {
   ListenRequest,
+  ConnectRequest,
 }
 
 table Request {

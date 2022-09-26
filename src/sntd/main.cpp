@@ -11,6 +11,7 @@
  *
  **************************************************************************************************/
 #include <iostream>
+#include <spdlog/sinks/stdout_color_sinks.h>
 #include <yaml-cpp/yaml.h>
 
 #include "server.h"
@@ -18,19 +19,24 @@
 
 int main(int argc, char *argv[])
 {
-    std::cout << "Hello!" << std::endl;
-
     try
     {
+        auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+        console_sink->set_level(spdlog::level::debug);
+        spdlog::set_default_logger(std::make_shared<spdlog::logger>("sntd", console_sink));
+        spdlog::info("Started.");
+
         const auto config = YAML::LoadFile("config.yaml");
-        const auto &core = config["core"];
+        const auto core = config["server"];
         const auto host = core["host"].as<std::string>();
         const auto port = core["port"].as<uint16_t>();
-        std::cout << "Listening on " << host << ":" << port << std::endl;
+        spdlog::info("Listening on {}:{}", host, port);
 
         asio::io_context ctx;
         server s(ctx, host, port);
         ctx.run();
+
+        spdlog::info("Exit.");
     }
     catch (std::exception &e)
     {
