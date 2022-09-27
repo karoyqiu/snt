@@ -4,5 +4,7 @@ server:
 
 listen:
   -
-    protocol: tcp
-    port: 4444
+    remote_protocol: tcp
+    remote_port: 4444
+    local_address: www.baidu.com
+    local_port: 80

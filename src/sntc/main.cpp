@@ -13,8 +13,10 @@
 #include <iostream>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <yaml-cpp/yaml.h>
+#include <RCF/RCF.hpp>
 
-#include "client.h"
+#include "messages.h"
+//#include "client.h"
 
 
 int main(int argc, char *argv[])
@@ -27,16 +29,32 @@ int main(int argc, char *argv[])
         spdlog::info("Started.");
 
         const auto config = YAML::LoadFile("config.yaml");
-        const auto &core = config["server"];
+        const auto core = config["server"];
         const auto host = core["host"].as<std::string>();
-        const auto port = core["port"].as<std::string>();
+        const auto port = core["port"].as<uint16_t>();
         std::cout << "Connecting to " << host << ":" << port << std::endl;
 
-        asio::io_context ctx;
-        client c(ctx);
+        // Initialize RCF.
+        RCF::RcfInit rcfInit;
 
-        c.start(host, port);
-        ctx.run();
+        // Instantiate a RCF client.
+        snt::RcfClient<snt::sntd_service_interface> client(RCF::TcpEndpoint(host, port));
+
+        // Connect to the server and call the Print() method.
+        const auto listenConfigs = config["listen"];
+        assert(listenConfigs.IsSequence());
+
+        for (const auto &lc : listenConfigs)
+        {
+            const auto rport = lc["remote_port"].as<uint16_t>();
+            const auto tunnel_id = client.listen(snt::TCP, rport);
+            spdlog::info("Tunnel ID for remote port {} is {}", rport, tunnel_id);
+        }
+
+        //client c(ctx);
+
+        //c.start(host, port);
+        //ctx.run();
 
         spdlog::info("Exit.");
     }

@@ -1,8 +1,8 @@
 add_executable(sntd
   "main.cpp"
-  "server.h" "server.cpp"
-  "session.h" "session.cpp"
-  "listen_session.h" "listen_session.cpp"
+  "service.h" "service.cpp"
+  #"session.h" "session.cpp"
+  #"listen_session.h" "listen_session.cpp"
 )
 
 target_link_libraries(sntd PRIVATE

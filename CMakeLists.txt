@@ -29,6 +29,7 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS OFF)
 set(CMAKE_BUILD_TYPE Debug CACHE STRING
     "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel.")
 set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Debug Release RelWithDebInfo MinSizeRel)
+option(BUILD_SHARED_LIBS "Global flag to cause add_library() to create shared libraries if on.")
 
 # Project snt
 project(snt VERSION 0.0.1)

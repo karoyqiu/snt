@@ -13,8 +13,9 @@
 #include <iostream>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <yaml-cpp/yaml.h>
+#include <RCF/RCF.hpp>
 
-#include "server.h"
+#include "service.h"
 
 
 int main(int argc, char *argv[])
@@ -33,10 +34,21 @@ int main(int argc, char *argv[])
         const auto port = core["port"].as<uint16_t>();
         spdlog::info("Listening on {}:{}", host, port);
 
-        asio::io_context ctx;
-        server s(ctx, host, port);
-        ctx.run();
+        // Initialize RCF.
+        RCF::RcfInit rcfInit;
 
+        // Instantiate a RCF server.
+        RCF::RcfServer server(RCF::TcpEndpoint(host, port));
+
+        // Bind the interface
+        service svc;
+        server.bind<snt::sntd_service_interface>(svc);
+
+        // Start the server
+        server.start();
+
+        std::cout << "Press Enter to exit..." << std::endl;
+        std::cin.get();
         spdlog::info("Exit.");
     }
     catch (std::exception &e)
