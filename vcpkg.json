@@ -2,12 +2,7 @@
   "name": "snt",
   "version": "0.0.1",
   "dependencies": [
-    {
-      "name": "asio",
-      "features": [ "openssl" ]
-    },
-    "boost-predef",
-    "flatbuffers",
+    "openssl",
     "spdlog",
     "yaml-cpp"
   ]

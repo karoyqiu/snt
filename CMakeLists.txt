@@ -64,10 +64,10 @@ include(WarningFlags)
 check_warning_flags(PROJECT_WARNING_FLAGS)
 
 # 第三方库
-find_package(asio REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(yaml-cpp CONFIG REQUIRED)
 find_package(OpenSSL REQUIRED)
+add_subdirectory("third_party")
 
 #include(EnableFolder)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
