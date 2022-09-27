@@ -10,7 +10,8 @@
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
-      "cmakeToolchain": "D:/misc/vcpkg/scripts/buildsystems/vcpkg.cmake",
+      "cmakeToolchain": "E:/repos/vcpkg-ms/scripts/buildsystems/vcpkg.cmake",
+      "cmakeExecutable": "C:/Program Files/CMake/bin/cmake.exe",
       "variables": [
         {
           "name": "BUILD_SHARED_LIBS",

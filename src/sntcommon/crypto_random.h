@@ -1,27 +1,28 @@
 ﻿/*! ***********************************************************************************************
  *
- * \file        client.h
- * \brief       服务类。
+ * \file        crypto_random.h
+ * \brief       随机数生成器 - 从 nanoid cpp 抄的
  *
  * \version     0.1
- * \date        2022/09/21
+ * \date        2022/09/27
  *
  * \author      Roy QIU <karoyqiu@gmail.com>
  * \copyright   © 2022 Roy QIU。
  *
  **************************************************************************************************/
 #pragma once
+#include <random>
+
+#include "sntcommon_export.h"
 
 
-class client
+class SNTCOMMON_EXPORT crypto_random
 {
 public:
-    client();
+    crypto_random();
 
-    const std::string &id() const { return id_; }
-
-    uint32_t connect(uint32_t tunnel_id);
+    void next_bytes(uint8_t *buffer, size_t size);
 
 private:
-    const std::string id_;
+    std::default_random_engine gen_;
 };

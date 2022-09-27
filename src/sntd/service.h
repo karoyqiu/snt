@@ -17,5 +17,6 @@
 class service
 {
 public:
+    void hello(const std::string &id);
     uint32_t listen(snt::Protocol protocol, uint16_t port);
 };

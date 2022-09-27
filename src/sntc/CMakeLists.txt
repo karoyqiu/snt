@@ -1,6 +1,6 @@
 add_executable(sntc
   "main.cpp"
-  #"client.h" "client.cpp"
+  "client.h" "client.cpp"
 )
 
 target_link_libraries(sntc PRIVATE

@@ -1,26 +1,18 @@
 ﻿/*! ***********************************************************************************************
  *
- * \file        client.h
- * \brief       服务类。
+ * \file        session.h
+ * \brief       snt 会话
  *
  * \version     0.1
- * \date        2022/09/21
+ * \date        2022/09/27
  *
  * \author      Roy QIU <karoyqiu@gmail.com>
  * \copyright   © 2022 Roy QIU。
  *
  **************************************************************************************************/
-#include "client.h"
+#pragma once
 
-#include "nanoid.h"
-
-
-client::client()
-    : id_(nanoid())
-{}
-
-
-uint32_t client::connect(uint32_t tunnel_id)
+struct session
 {
-    return 54321;
-}
+    std::string client_id;
+};

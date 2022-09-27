@@ -1,9 +1,9 @@
 include(GenerateExportHeader)
 
 add_library(sntcommon
-  "messages.h" "messages.cpp"
+  "messages.h" 
   "keyed_logger.h"
-)
+ "crypto_random.h" "crypto_random.cpp" "nanoid.h" "nanoid.cpp")
 generate_export_header(sntcommon)
 target_compile_options(sntcommon PUBLIC ${PROJECT_WARNING_FLAGS})
 target_precompile_headers(sntcommon PUBLIC

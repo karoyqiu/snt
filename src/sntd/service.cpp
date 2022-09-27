@@ -11,6 +11,17 @@
  *
  **************************************************************************************************/
 #include "service.h"
+#include "session.h"
+
+
+void service::hello(const std::string &id)
+{
+    spdlog::info("Hello from {}", id);
+
+    auto &rcfSession = RCF::getCurrentRcfSession();
+    auto &s = rcfSession.getSessionObject<session>(true);
+    s.client_id = id;
+}
 
 
 uint32_t service::listen(snt::Protocol protocol, uint16_t port)

@@ -11,12 +11,14 @@
  *
  **************************************************************************************************/
 #include <iostream>
+#include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <yaml-cpp/yaml.h>
 #include <RCF/RCF.hpp>
+#include <RCF/ProxyEndpoint.hpp>
 
 #include "messages.h"
-//#include "client.h"
+#include "client.h"
 
 
 int main(int argc, char *argv[])
@@ -38,7 +40,11 @@ int main(int argc, char *argv[])
         RCF::RcfInit rcfInit;
 
         // Instantiate a RCF client.
-        snt::RcfClient<snt::sntd_service_interface> client(RCF::TcpEndpoint(host, port));
+        const RCF::TcpEndpoint endpoint(host, port);
+        snt::RcfClient<snt::sntd_service_interface> sntc(endpoint);
+
+        client c;
+        sntc.hello(c.id());
 
         // Connect to the server and call the Print() method.
         const auto listenConfigs = config["listen"];
@@ -47,17 +53,17 @@ int main(int argc, char *argv[])
         for (const auto &lc : listenConfigs)
         {
             const auto rport = lc["remote_port"].as<uint16_t>();
-            const auto tunnel_id = client.listen(snt::TCP, rport);
+            const auto tunnel_id = sntc.listen(snt::TCP, rport);
             spdlog::info("Tunnel ID for remote port {} is {}", rport, tunnel_id);
         }
 
-        
 
-        //client c(ctx);
+        RCF::RcfServer clientServer(RCF::ProxyEndpoint(endpoint, c.id()));
+        clientServer.bind<snt::sntc_service_interface>(c);
+        clientServer.start();
 
-        //c.start(host, port);
-        //ctx.run();
-
+        std::cout << "Press Enter to exit..." << std::endl;
+        std::cin.get();
         spdlog::info("Exit.");
     }
     catch (std::exception &e)

@@ -33,6 +33,7 @@ enum Protocol {
 
 // sntd 服务
 RCF_BEGIN(sntd_service_interface, "sntd_service")
+    RCF_METHOD_V1(void, hello, const std::string &)
     RCF_METHOD_R2(uint32_t, listen, Protocol, uint16_t)
 RCF_END(sntd_service_interface)
 

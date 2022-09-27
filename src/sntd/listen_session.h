@@ -11,13 +11,15 @@
  *
  **************************************************************************************************/
 #include <atomic>
+#include <memory>
 #include <RCF/external/asio/asio.hpp>
 
 #include "keyed_logger.h"
+#include "messages.h"
 
 using asio::ip::tcp;
 
-class session;
+using client_ptr = std::shared_ptr<snt::RcfClient<sntc_service_interface>>;
 
 
 class listen_session
