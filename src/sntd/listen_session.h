@@ -11,9 +11,7 @@
  *
  **************************************************************************************************/
 #include <atomic>
-#include <asio.hpp>
-
-#include <sntcommon_generated.h>
+#include <RCF/external/asio/asio.hpp>
 
 #include "keyed_logger.h"
 
