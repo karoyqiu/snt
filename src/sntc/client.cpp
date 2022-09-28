@@ -12,11 +12,9 @@
  **************************************************************************************************/
 #include "client.h"
 
-#include "nanoid.h"
 
-
-client::client()
-    : id_(nanoid())
+client::client(std::string &&id)
+    : id_(std::move(id))
 {}
 
 

@@ -11,16 +11,18 @@
  *
  **************************************************************************************************/
 #include "service.h"
+
+#include "nanoid.h"
 #include "session.h"
 
 
-void service::hello(const std::string &id)
+std::string service::hello()
 {
-    spdlog::info("Hello from {}", id);
-
     auto &rcfSession = RCF::getCurrentRcfSession();
     auto &s = rcfSession.getSessionObject<session>(true);
-    s.client_id = id;
+    s.client_id = nanoid();
+    spdlog::info("Hello from {}", s.client_id);
+    return s.client_id;
 }
 
 

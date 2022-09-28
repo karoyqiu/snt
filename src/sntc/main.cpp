@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
         const auto core = config["server"];
         const auto host = core["host"].as<std::string>();
         const auto port = core["port"].as<uint16_t>();
-        std::cout << "Connecting to " << host << ":" << port << std::endl;
+        spdlog::info("Connecting to {}:{})", host, port);
 
         // Initialize RCF.
         RCF::RcfInit rcfInit;
@@ -43,8 +43,8 @@ int main(int argc, char *argv[])
         const RCF::TcpEndpoint endpoint(host, port);
         snt::RcfClient<snt::sntd_service_interface> sntc(endpoint);
 
-        client c;
-        sntc.hello(c.id());
+        client c(sntc.hello());
+        spdlog::info("Client ID: {}", c.id());
 
         // Connect to the server and call the Print() method.
         const auto listenConfigs = config["listen"];
@@ -57,12 +57,11 @@ int main(int argc, char *argv[])
             spdlog::info("Tunnel ID for remote port {} is {}", rport, tunnel_id);
         }
 
-
         RCF::RcfServer clientServer(RCF::ProxyEndpoint(endpoint, c.id()));
         clientServer.bind<snt::sntc_service_interface>(c);
         clientServer.start();
 
-        std::cout << "Press Enter to exit..." << std::endl;
+        spdlog::info("Press Enter to exit...");
         std::cin.get();
         spdlog::info("Exit.");
     }

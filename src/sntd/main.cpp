@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
         // Start the server
         server.start();
 
-        std::cout << "Press Enter to exit..." << std::endl;
+        spdlog::info("Press Enter to exit...");
         std::cin.get();
         spdlog::info("Exit.");
     }

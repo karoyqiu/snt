@@ -16,7 +16,7 @@
 class client
 {
 public:
-    client();
+    explicit client(std::string &&id);
 
     const std::string &id() const { return id_; }
 
