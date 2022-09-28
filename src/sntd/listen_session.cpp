@@ -14,32 +14,19 @@
 
 #include <cassert>
 
-#include <sntrequest_generated.h>
-#include <sntresponse_generated.h>
-
-#include "session.h"
-
 std::atomic_uint32_t listen_session::seq_(0);
 
 
-listen_session::listen_session(session *parent, snt::Protocol protocol, uint16_t port)
-    : parent_(parent)
+listen_session::listen_session(const std::string &client_id, snt::Protocol protocol, uint16_t port)
+    : client_id_(client_id)
     , channel_id_(++seq_)
-    , logger_("Channel " + std::to_string(channel_id_))
+    , logger_(client_id + "-CH" + std::to_string(channel_id_))
     , acceptor_(ctx_, tcp::endpoint(asio::ip::address_v4::any(), port))
     , socket_(ctx_)
 {
-    assert(parent && protocol == snt::Protocol_Tcp && port != 0);
+    assert(!client_id.empty() && protocol == snt::TCP && port != 0);
     logger_.info("Listening on port {}", port);
     do_accept();
-
-    flatbuffers::FlatBufferBuilder builder;
-    auto head = snt::CreateHead(builder, 0, 0, 0);
-    auto body = snt::CreateListenResponse(builder, channel_id_);
-    auto resp = snt::CreateResponse(builder, head, snt::ResponseBody_ListenResponse, body.Union());
-    builder.Finish(resp);
-
-    parent->send_response(builder);
 }
 
 
@@ -55,13 +42,7 @@ void listen_session::do_accept()
         {
             if (!ec)
             {
-                flatbuffers::FlatBufferBuilder builder;
-                auto head = snt::CreateHead(builder, 0, 0, 0);
-                auto body = snt::CreateConnectRequest(builder, channel_id_);
-                auto resp = snt::CreateResponse(builder, head, snt::ResponseBody_ListenResponse, body.Union());
-                builder.Finish(resp);
 
-                parent_->send_response(builder);
             }
 
             do_accept();

@@ -19,27 +19,27 @@
 
 using asio::ip::tcp;
 
-using client_ptr = std::shared_ptr<snt::RcfClient<sntc_service_interface>>;
+//using client_ptr = std::shared_ptr<snt::RcfClient<sntc_service_interface>>;
 
 
 class listen_session
- {
- public:
- 	listen_session(session *parent, snt::Protocol protocol, uint16_t port);
+{
+public:
+ 	listen_session(const std::string &client_id, snt::Protocol protocol, uint16_t port);
     virtual ~listen_session();
 
     uint32_t channel_id() const { return channel_id_; }
 
- private:
-     void do_accept();
+private:
+    void do_accept();
  	
- private:
-     static std::atomic_uint32_t seq_;
+private:
+    static std::atomic_uint32_t seq_;
 
-     session *parent_;
-     const uint32_t channel_id_;
-     const keyed_logger logger_;
-     asio::io_context ctx_;
-     tcp::acceptor acceptor_;
-     tcp::socket socket_;
+    const std::string client_id_;
+    const uint32_t channel_id_;
+    const keyed_logger logger_;
+    asio::io_service ctx_;
+    tcp::acceptor acceptor_;
+    tcp::socket socket_;
 };
