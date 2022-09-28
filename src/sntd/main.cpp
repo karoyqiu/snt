@@ -14,8 +14,18 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <yaml-cpp/yaml.h>
 #include <RCF/RCF.hpp>
+#include <RCF/ProxyEndpoint.hpp>
 
 #include "service.h"
+
+
+static RCF::RcfServer *g_server = nullptr;
+
+RCF::ProxyEndpoint makeProxyEndpoint(const std::string &client_id)
+{
+    assert(g_server);
+    return RCF::ProxyEndpoint(*g_server, client_id);
+}
 
 
 int main(int argc, char *argv[])

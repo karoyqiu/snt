@@ -40,12 +40,12 @@ namespace detail
   public:
 
       // JL: VS 2015 stumbled over this for some reason.
-    //static const bool value =
-    //  sizeof(service_has_move::eval(
-    //    static_cast<service_type*>(0),
-    //    static_cast<implementation_type*>(0))) == 1;
+    static const bool value =
+      sizeof(service_has_move::eval(
+        static_cast<service_type*>(0),
+        static_cast<implementation_type*>(0))) == 1;
 
-    static const bool value = false;
+    //static const bool value = false;
   };
 }
 #endif // defined(ASIO_HAS_MOVE)

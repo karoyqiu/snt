@@ -1,6 +1,6 @@
 ﻿/*! ***********************************************************************************************
  *
- * \file        listen_session.h
+ * \file        listener.h
  * \brief       监听会话
  *
  * \version     0.1
@@ -18,15 +18,15 @@
 #include "messages.h"
 
 using asio::ip::tcp;
+using client_t = snt::RcfClient<snt::sntc_service_interface>;
+using client_ptr = std::shared_ptr<client_t>;
 
-//using client_ptr = std::shared_ptr<snt::RcfClient<sntc_service_interface>>;
 
-
-class listen_session
+class listener
 {
 public:
- 	listen_session(const std::string &client_id, snt::Protocol protocol, uint16_t port);
-    virtual ~listen_session();
+ 	listener(const std::string &client_id, snt::Protocol protocol, uint16_t port);
+    virtual ~listener();
 
     uint32_t channel_id() const { return channel_id_; }
 
@@ -36,9 +36,10 @@ private:
 private:
     static std::atomic_uint32_t seq_;
 
-    const std::string client_id_;
     const uint32_t channel_id_;
     const keyed_logger logger_;
+    const std::string client_id_;
+    client_ptr client_;
     asio::io_service ctx_;
     tcp::acceptor acceptor_;
     tcp::socket socket_;

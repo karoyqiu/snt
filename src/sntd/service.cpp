@@ -14,7 +14,7 @@
 
 #include "nanoid.h"
 
-#include "listen_session.h"
+#include "listener.h"
 #include "session.h"
 
 
@@ -41,10 +41,10 @@ uint32_t service::listen(snt::Protocol protocol, uint16_t port)
         return 0;
     }
 
-    auto listener = std::make_shared<listen_session>(s->client_id, protocol, port);
-    listeners_.emplace(s->client_id, listener);
+    auto l = std::make_shared<listener>(s->client_id, protocol, port);
+    listeners_.emplace(s->client_id, l);
 
-    return listener->channel_id();
+    return l->channel_id();
 }
 
 

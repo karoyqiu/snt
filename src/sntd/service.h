@@ -16,8 +16,8 @@
 
 #include "messages.h"
 
-class listen_session;
-using listen_session_ptr = std::shared_ptr<listen_session>;
+class listener;
+using listener_ptr = std::shared_ptr<listener>;
 
 
 class service
@@ -31,5 +31,5 @@ private:
     void clear_client(RCF::RcfSession &rcfSession);
 
 private:
-    std::unordered_map<std::string, listen_session_ptr> listeners_;
+    std::unordered_map<std::string, listener_ptr> listeners_;
 };
