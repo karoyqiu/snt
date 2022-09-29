@@ -27,9 +27,11 @@ public:
 
     uint32_t listen(snt::Protocol protocol, uint16_t port);
 
+    size_t send(uint32_t tunnel_id, uint32_t conn_id, const RCF::ByteBuffer &data);
+
 private:
     void clear_client(RCF::RcfSession &rcfSession);
 
 private:
-    std::unordered_map<std::string, listener_ptr> listeners_;
+    std::unordered_multimap<std::string, listener_ptr> listeners_;
 };

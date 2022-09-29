@@ -4,7 +4,7 @@ add_executable(sntd
   "session.h"
   "listener.h" "listener.cpp"
   "connect_session.h "connect_session.cpp""
-)
+ "session_manager.h")
 
 target_link_libraries(sntd PRIVATE
   yaml-cpp

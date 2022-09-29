@@ -44,7 +44,33 @@ uint32_t service::listen(snt::Protocol protocol, uint16_t port)
     auto l = std::make_shared<listener>(s->client_id, protocol, port);
     listeners_.emplace(s->client_id, l);
 
-    return l->channel_id();
+    return l->tunnel_id();
+}
+
+
+size_t service::send(uint32_t tunnel_id, uint32_t conn_id, const RCF::ByteBuffer &data)
+{
+    auto &rcfSession = RCF::getCurrentRcfSession();
+    const auto *s = rcfSession.querySessionObject<session>();
+
+    if (s == nullptr)
+    {
+        return 0;
+    }
+
+    auto range = listeners_.equal_range(s->client_id);
+
+    for (auto iter = range.first; iter != range.second; ++iter)
+    {
+        auto l = iter->second;
+
+        if (l->tunnel_id() == tunnel_id)
+        {
+            return l->send(conn_id, data);
+        }
+    }
+
+    return 0;
 }
 
 

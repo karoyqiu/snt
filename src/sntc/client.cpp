@@ -22,3 +22,9 @@ uint32_t client::connect(uint32_t tunnel_id)
 {
     return 54321;
 }
+
+
+size_t client::send(uint32_t conn_id, const RCF::ByteBuffer &data)
+{
+    return data.getLength();
+}
