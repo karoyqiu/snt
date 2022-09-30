@@ -19,6 +19,7 @@
 
 #include "messages.h"
 #include "client.h"
+#include "sntd.h"
 
 
 int main(int argc, char *argv[])
@@ -42,6 +43,7 @@ int main(int argc, char *argv[])
         // Instantiate a RCF client.
         const RCF::TcpEndpoint endpoint(host, port);
         snt::RcfClient<snt::sntd_service_interface> sntd(endpoint);
+        set_sntd(&sntd);
 
         client c(sntd.hello());
         spdlog::info("Client ID: {}", c.id());

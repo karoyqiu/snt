@@ -49,6 +49,7 @@ int main(int argc, char *argv[])
 
         // Instantiate a RCF server.
         RCF::RcfServer server(RCF::TcpEndpoint(host, port));
+        g_server = &server;
         server.setEnableProxyEndpoints(true);
 
         // Bind the interface

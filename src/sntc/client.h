@@ -15,16 +15,11 @@
 #include <unordered_map>
 
 #include "messages.h"
+#include "remote_session.h"
 
 namespace YAML {
 class Node;
 }
-
-struct remote_address
-{
-    std::string host;
-    uint16_t port = 0;
-};
 
 
 class client
@@ -43,4 +38,5 @@ public:
 private:
     const std::string id_;
     std::unordered_map<uint32_t, remote_address> tunnels_;
+    std::unordered_map<uint32_t, remote_session_ptr> remotes_;
 };
