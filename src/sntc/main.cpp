@@ -45,17 +45,7 @@ int main(int argc, char *argv[])
 
         client c(sntd.hello());
         spdlog::info("Client ID: {}", c.id());
-
-        // Connect to the server and call the Print() method.
-        const auto listenConfigs = config["listen"];
-        assert(listenConfigs.IsSequence());
-
-        for (const auto &lc : listenConfigs)
-        {
-            const auto rport = lc["remote_port"].as<uint16_t>();
-            const auto tunnel_id = sntd.listen(snt::TCP, rport);
-            spdlog::info("Tunnel ID for remote port {} is {}", rport, tunnel_id);
-        }
+        c.listen(config, &sntd);
 
         RCF::RcfServer clientServer(RCF::ProxyEndpoint(endpoint, c.id()));
         clientServer.bind<snt::sntc_service_interface>(c);

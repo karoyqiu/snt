@@ -11,7 +11,14 @@
  *
  **************************************************************************************************/
 #pragma once
+#include <atomic>
 #include <unordered_map>
+
+#include "messages.h"
+
+namespace YAML {
+class Node;
+}
 
 struct remote_address
 {
@@ -26,6 +33,8 @@ public:
     explicit client(std::string &&id);
 
     const std::string &id() const { return id_; }
+
+    void listen(const YAML::Node &config, snt::RcfClient<snt::sntd_service_interface> *sntd);
 
     uint32_t connect(uint32_t tunnel_id);
 
