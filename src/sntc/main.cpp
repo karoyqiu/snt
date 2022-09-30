@@ -41,9 +41,9 @@ int main(int argc, char *argv[])
 
         // Instantiate a RCF client.
         const RCF::TcpEndpoint endpoint(host, port);
-        snt::RcfClient<snt::sntd_service_interface> sntc(endpoint);
+        snt::RcfClient<snt::sntd_service_interface> sntd(endpoint);
 
-        client c(sntc.hello());
+        client c(sntd.hello());
         spdlog::info("Client ID: {}", c.id());
 
         // Connect to the server and call the Print() method.
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
         for (const auto &lc : listenConfigs)
         {
             const auto rport = lc["remote_port"].as<uint16_t>();
-            const auto tunnel_id = sntc.listen(snt::TCP, rport);
+            const auto tunnel_id = sntd.listen(snt::TCP, rport);
             spdlog::info("Tunnel ID for remote port {} is {}", rport, tunnel_id);
         }
 

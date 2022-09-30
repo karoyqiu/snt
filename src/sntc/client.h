@@ -11,6 +11,13 @@
  *
  **************************************************************************************************/
 #pragma once
+#include <unordered_map>
+
+struct remote_address
+{
+    std::string host;
+    uint16_t port = 0;
+};
 
 
 class client
@@ -26,4 +33,5 @@ public:
 
 private:
     const std::string id_;
+    std::unordered_map<uint32_t, remote_address> tunnels_;
 };
