@@ -2,6 +2,10 @@
   "name": "snt",
   "version": "0.0.1",
   "dependencies": [
+    {
+      "name": "libuuid",
+      "platform": "linux"
+    },
     "openssl",
     "spdlog",
     "yaml-cpp"

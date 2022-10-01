@@ -16,6 +16,9 @@ target_compile_definitions(rcf PRIVATE
 
 if(WIN32)
   target_compile_definitions(rcf PRIVATE "_WIN32_WINNT=0x0601")
+elseif(UNIX)
+  find_package(unofficial-libuuid CONFIG REQUIRED)
+  target_link_libraries(rcf PRIVATE unofficial::UUID::uuid)
 endif()
 
 target_include_directories(rcf PUBLIC "include")
