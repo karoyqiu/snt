@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
         const auto core = config["server"];
         const auto host = core["host"].as<std::string>();
         const auto port = core["port"].as<uint16_t>();
-        spdlog::info("Connecting to {}:{})", host, port);
+        spdlog::info("Connecting to {}:{}", host, port);
 
         // Initialize RCF.
         RCF::RcfInit rcfInit;

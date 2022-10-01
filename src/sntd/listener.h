@@ -14,6 +14,7 @@
 
 #include <atomic>
 #include <memory>
+#include <thread>
 #include <unordered_map>
 #include <RCF/external/asio/asio.hpp>
 
@@ -51,7 +52,8 @@ private:
     const keyed_logger logger_;
     const std::string client_id_;
     sntc_ptr client_;
-    asio::io_service ctx_;
+    std::unique_ptr<std::thread> thread_;
+    asio::io_service ios_;
     tcp::acceptor acceptor_;
     tcp::socket socket_;
     std::unordered_map<uint32_t, session_ptr> sessions_;

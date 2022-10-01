@@ -30,7 +30,9 @@ connect_session::connect_session(session_manager *manager, sntc_ptr client, uint
     , client_(client)
     , socket_(std::move(s))
 {
-    do_read();
+    spdlog::info("Start connect session {}", conn_id_);
+    socket_.async_read_some(asio::buffer(buffer_),
+        std::bind(&connect_session::handle_read, this, _1, _2));
 }
 
 

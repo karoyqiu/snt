@@ -41,6 +41,7 @@ void client::listen(const YAML::Node &config, snt::RcfClient<snt::sntd_service_i
 
 uint32_t client::connect(uint32_t tunnel_id)
 {
+    spdlog::info("Connecting to tunnel {}", tunnel_id);
     auto iter = tunnels_.find(tunnel_id);
 
     if (iter == tunnels_.end())

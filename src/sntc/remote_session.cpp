@@ -31,8 +31,35 @@ remote_session::remote_session(uint32_t tunnel_id, const remote_address &addr)
     , socket_(ios_)
 {
     logger_.info("Connecting to {}:{}", addr_.host, addr_.port);
+
     resolver_.async_resolve(tcp::resolver::query{ addr.host, addr.port },
-        std::bind(&remote_session::do_connect, shared_from_this(), _1, _2));
+        [this](const asio::error_code &err, const tcp::resolver::iterator &endpoints)
+        {
+            if (!err)
+            {
+                asio::async_connect(socket_, endpoints,
+                    std::bind(&remote_session::handle_connect, shared_from_this(), _1));
+            }
+            else
+            {
+                logger_.error("Failed to resolve: {}", err.message());
+            }
+        });
+
+    thread_ = std::make_unique<std::thread>(
+        std::bind(static_cast<size_t(asio::io_service:: *)()>(&asio::io_service::run), &ios_)
+    );
+}
+
+
+remote_session::~remote_session()
+{
+    ios_.stop();
+
+    if (thread_ && thread_->joinable())
+    {
+        thread_->join();
+    }
 }
 
 
@@ -52,24 +79,11 @@ void remote_session::write(const char *buffer, size_t size)
 }
 
 
-void remote_session::do_connect(const asio::error_code &err, const tcp::resolver::iterator &endpoints)
-{
-    if (!err)
-    {
-        asio::async_connect(socket_, endpoints,
-            std::bind(&remote_session::handle_connect, shared_from_this(), _1));
-    }
-    else
-    {
-        logger_.error("Failed to resolve: {}", err.message());
-    }
-}
-
-
 void remote_session::handle_connect(const asio::error_code &err)
 {
     if (!err)
     {
+        logger_.info("Connected");
         do_read();
     }
     else
@@ -81,8 +95,6 @@ void remote_session::handle_connect(const asio::error_code &err)
 
 void remote_session::do_read()
 {
-    auto self = shared_from_this();
-
     asio::async_read(socket_, asio::buffer(data_, sizeof(data_)),
         std::bind(&remote_session::handle_read, shared_from_this(), _1, _2));
 }

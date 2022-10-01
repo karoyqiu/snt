@@ -27,17 +27,30 @@ listener::listener(const std::string &client_id, snt::Protocol protocol, uint16_
     , logger_(client_id + "-CH" + std::to_string(tunnel_id_))
     , client_id_(client_id)
     , client_(std::make_shared<sntc_t>(makeProxyEndpoint(client_id)))
-    , acceptor_(ctx_, tcp::endpoint(asio::ip::address_v4::any(), port))
-    , socket_(ctx_)
+    , acceptor_(ios_, tcp::endpoint(asio::ip::address_v4::any(), port))
+    , socket_(ios_)
 {
     assert(!client_id.empty() && protocol == snt::TCP && port != 0);
     logger_.info("Listening on port {}", port);
+
     do_accept();
+
+    thread_ = std::make_unique<std::thread>(
+        std::bind(static_cast<size_t(asio::io_service:: *)()>(&asio::io_service::run), &ios_)
+    );
 }
 
 
 listener::~listener()
 {
+    logger_.info("Listening ending");
+    ios_.stop();
+
+    if (thread_ && thread_->joinable())
+    {
+        thread_->join();
+    }
+
     logger_.info("Listening ended");
 }
 
@@ -68,10 +81,12 @@ void listener::do_accept()
         {
             if (!ec)
             {
-                auto conn_id = client_->connect(tunnel_id_);
+                logger_.info("Accepted");
+                auto conn_id = client_->connect(tunnel_id_).get();
 
                 if (conn_id == 0)
                 {
+                    logger_.warn("What? {}", conn_id);
                     socket_.close();
                 }
                 else

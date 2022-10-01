@@ -30,13 +30,13 @@ class remote_session : public std::enable_shared_from_this<remote_session>
 {
 public:
     remote_session(uint32_t tunnel_id, const remote_address &addr);
+    virtual ~remote_session();
 
     uint32_t id() const { return conn_id_; }
 
     void write(const char *buffer, size_t size);
 
 private:
-    void do_connect(const asio::error_code &err, const tcp::resolver::iterator &endpoints);
     void handle_connect(const asio::error_code &err);
 
     void do_read();
@@ -51,6 +51,7 @@ private:
     asio::io_service ios_;
     tcp::resolver resolver_;
     tcp::socket socket_;
+    std::unique_ptr<std::thread> thread_;
     char data_[1024];
 };
 
