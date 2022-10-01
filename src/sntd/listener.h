@@ -38,6 +38,7 @@ public:
     const std::string &client_id() const { return client_id_; }
     uint32_t tunnel_id() const { return tunnel_id_; }
 
+    void start(uint32_t conn_id);
     size_t send(uint32_t conn_id, const RCF::ByteBuffer &data);
 
     virtual void remove(uint32_t conn_id) override;

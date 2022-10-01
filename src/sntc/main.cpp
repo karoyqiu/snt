@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
         auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
         console_sink->set_level(spdlog::level::debug);
         spdlog::set_default_logger(std::make_shared<spdlog::logger>("sntc", console_sink));
+        spdlog::set_level(spdlog::level::debug);
         spdlog::info("Started.");
 
         const auto config = YAML::LoadFile("config.yaml");

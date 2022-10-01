@@ -52,7 +52,8 @@ private:
     tcp::resolver resolver_;
     tcp::socket socket_;
     std::unique_ptr<std::thread> thread_;
-    char data_[1024];
+    char rbuf_[1024];
+    char wbuf_[1024];
 };
 
 using remote_session_ptr = std::shared_ptr<remote_session>;

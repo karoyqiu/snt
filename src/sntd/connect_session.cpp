@@ -29,16 +29,19 @@ connect_session::connect_session(session_manager *manager, sntc_ptr client, uint
     , manager_(manager)
     , client_(client)
     , socket_(std::move(s))
+{}
+
+
+void connect_session::start()
 {
     spdlog::info("Start connect session {}", conn_id_);
-    socket_.async_read_some(asio::buffer(buffer_),
-        std::bind(&connect_session::handle_read, this, _1, _2));
+    do_read();
 }
 
 
 void connect_session::write(const uint8_t *buffer, size_t size)
 {
-    socket_.async_write_some(asio::buffer(buffer, size),
+    asio::async_write(socket_, asio::buffer(buffer, size),
         std::bind(&connect_session::handle_write, shared_from_this(), _1, _2));
 }
 

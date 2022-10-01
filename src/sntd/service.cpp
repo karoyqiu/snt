@@ -48,26 +48,24 @@ uint32_t service::listen(snt::Protocol protocol, uint16_t port)
 }
 
 
+void service::connected(uint32_t tunnel_id, uint32_t conn_id, int error)
+{
+    auto l = find_listener(tunnel_id);
+
+    if (l)
+    {
+        return l->start(conn_id);
+    }
+}
+
+
 size_t service::send(uint32_t tunnel_id, uint32_t conn_id, const RCF::ByteBuffer &data)
 {
-    auto &rcfSession = RCF::getCurrentRcfSession();
-    const auto *s = rcfSession.querySessionObject<session>();
+    auto l = find_listener(tunnel_id);
 
-    if (s == nullptr)
+    if (l)
     {
-        return 0;
-    }
-
-    auto range = listeners_.equal_range(s->client_id);
-
-    for (auto iter = range.first; iter != range.second; ++iter)
-    {
-        auto l = iter->second;
-
-        if (l->tunnel_id() == tunnel_id)
-        {
-            return l->send(conn_id, data);
-        }
+        return l->send(conn_id, data);
     }
 
     return 0;
@@ -83,4 +81,29 @@ void service::clear_client(RCF::RcfSession &rcfSession)
         spdlog::info("Client disconnected: {}", s->client_id);
         listeners_.erase(s->client_id);
     }
+}
+
+
+listener_ptr service::find_listener(uint32_t tunnel_id) const
+{
+    auto &rcfSession = RCF::getCurrentRcfSession();
+    const auto *s = rcfSession.querySessionObject<session>();
+
+    if (s)
+    {
+        auto range = listeners_.equal_range(s->client_id);
+
+        for (auto iter = range.first; iter != range.second; ++iter)
+        {
+            auto l = iter->second;
+
+            if (l->tunnel_id() == tunnel_id)
+            {
+                return l;
+            }
+        }
+
+    }
+
+    return {};
 }

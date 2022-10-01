@@ -67,7 +67,10 @@ void remote_session::write(const char *buffer, size_t size)
 {
     auto self = shared_from_this();
 
-    asio::async_write(socket_, asio::buffer(buffer, size),
+    assert(size <= sizeof(wbuf_));
+    memcpy(wbuf_, buffer, size);
+
+    asio::async_write(socket_, asio::buffer(wbuf_, size),
         [self](const asio::error_code &err, size_t size)
         {
             if (err)
@@ -84,18 +87,20 @@ void remote_session::handle_connect(const asio::error_code &err)
     if (!err)
     {
         logger_.info("Connected");
+        get_sntd()->connected(tunnel_id_, conn_id_, 0);
         do_read();
     }
     else
     {
         logger_.error("Failed to connect: {}", err.message());
+        get_sntd()->connected(tunnel_id_, conn_id_, err.value());
     }
 }
 
 
 void remote_session::do_read()
 {
-    asio::async_read(socket_, asio::buffer(data_, sizeof(data_)),
+    socket_.async_read_some(asio::buffer(rbuf_, sizeof(rbuf_)),
         std::bind(&remote_session::handle_read, shared_from_this(), _1, _2));
 }
 
@@ -104,7 +109,7 @@ void remote_session::handle_read(const asio::error_code &err, size_t size)
 {
     if (!err)
     {
-        get_sntd()->send(tunnel_id_, conn_id_, RCF::ByteBuffer(data_, size, true));
+        get_sntd()->send(tunnel_id_, conn_id_, RCF::ByteBuffer(rbuf_, size, true));
 
         do_read();
     }

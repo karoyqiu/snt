@@ -28,6 +28,7 @@ class connect_session : public std::enable_shared_from_this<connect_session>
 public:
     connect_session(session_manager *manager, sntc_ptr client, uint32_t conn_id, tcp::socket &&s);
 
+    void start();
     void write(const uint8_t *buffer, size_t size);
 
 private:

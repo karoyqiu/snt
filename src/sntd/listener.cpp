@@ -55,6 +55,17 @@ listener::~listener()
 }
 
 
+void listener::start(uint32_t conn_id)
+{
+    auto iter = sessions_.find(conn_id);
+
+    if (iter != sessions_.end())
+    {
+        iter->second->start();
+    }
+}
+
+
 size_t listener::send(uint32_t conn_id, const RCF::ByteBuffer &data)
 {
     auto iter = sessions_.find(conn_id);

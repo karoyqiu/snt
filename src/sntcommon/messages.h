@@ -31,10 +31,12 @@ enum Protocol {
     TCP,
 };
 
+
 // sntd 服务
 RCF_BEGIN(sntd_service_interface, "sntd_service")
     RCF_METHOD_R0(std::string, hello)
     RCF_METHOD_R2(uint32_t, listen, Protocol, uint16_t)
+    RCF_METHOD_V3(void, connected, uint32_t, uint32_t, int)
     RCF_METHOD_R3(size_t, send, uint32_t, uint32_t, RCF::ByteBuffer)
 RCF_END(sntd_service_interface)
 
