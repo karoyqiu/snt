@@ -33,6 +33,8 @@ public:
 
     uint32_t connect(uint32_t tunnel_id);
 
+    void close(uint32_t conn_id);
+
     size_t send(uint32_t conn_id, const RCF::ByteBuffer &data);
 
 private:

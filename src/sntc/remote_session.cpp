@@ -43,6 +43,7 @@ remote_session::remote_session(uint32_t tunnel_id, const remote_address &addr)
             else
             {
                 logger_.error("Failed to resolve: {}", err.message());
+                get_sntd()->close(tunnel_id_, conn_id_);
             }
         });
 
@@ -63,6 +64,12 @@ remote_session::~remote_session()
 }
 
 
+void remote_session::close()
+{
+    socket_.close();
+}
+
+
 void remote_session::write(const char *buffer, size_t size)
 {
     auto self = shared_from_this();
@@ -76,6 +83,7 @@ void remote_session::write(const char *buffer, size_t size)
             if (err)
             {
                 self->logger_.error("Failed to write: {}", err.message());
+                get_sntd()->close(self->tunnel_id_, self->conn_id_);
             }
         }
     );
@@ -87,13 +95,13 @@ void remote_session::handle_connect(const asio::error_code &err)
     if (!err)
     {
         logger_.info("Connected");
-        get_sntd()->connected(tunnel_id_, conn_id_, 0);
+        get_sntd()->connected(tunnel_id_, conn_id_);
         do_read();
     }
     else
     {
         logger_.error("Failed to connect: {}", err.message());
-        get_sntd()->connected(tunnel_id_, conn_id_, err.value());
+        get_sntd()->close(tunnel_id_, conn_id_);
     }
 }
 
@@ -110,11 +118,11 @@ void remote_session::handle_read(const asio::error_code &err, size_t size)
     if (!err)
     {
         get_sntd()->send(tunnel_id_, conn_id_, RCF::ByteBuffer(rbuf_, size, true));
-
         do_read();
     }
     else
     {
         logger_.error("Failed to read: {}", err.message());
+        get_sntd()->close(tunnel_id_, conn_id_);
     }
 }

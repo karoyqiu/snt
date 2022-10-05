@@ -55,6 +55,18 @@ uint32_t client::connect(uint32_t tunnel_id)
 }
 
 
+void client::close(uint32_t conn_id)
+{
+    auto iter = remotes_.find(conn_id);
+
+    if (iter != remotes_.end())
+    {
+        iter->second->close();
+        remotes_.erase(iter);
+    }
+}
+
+
 size_t client::send(uint32_t conn_id, const RCF::ByteBuffer &data)
 {
     auto iter = remotes_.find(conn_id);

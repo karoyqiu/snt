@@ -39,6 +39,12 @@ void connect_session::start()
 }
 
 
+void connect_session::close()
+{
+    socket_.close();
+}
+
+
 void connect_session::write(const uint8_t *buffer, size_t size)
 {
     asio::async_write(socket_, asio::buffer(buffer, size),
@@ -63,6 +69,7 @@ void connect_session::handle_read(const asio::error_code &err, std::size_t bytes
     else
     {
         logger_.error("Failed to read: {}", err.message());
+        close();
         manager_->remove(conn_id_);
     }
 }
@@ -73,6 +80,7 @@ void connect_session::handle_write(const asio::error_code &err, std::size_t byte
     if (err)
     {
         logger_.error("Failed to write: {}", err.message());
+        close();
         manager_->remove(conn_id_);
     }
 }

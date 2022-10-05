@@ -48,13 +48,24 @@ uint32_t service::listen(snt::Protocol protocol, uint16_t port)
 }
 
 
-void service::connected(uint32_t tunnel_id, uint32_t conn_id, int error)
+void service::connected(uint32_t tunnel_id, uint32_t conn_id)
 {
     auto l = find_listener(tunnel_id);
 
     if (l)
     {
         return l->start(conn_id);
+    }
+}
+
+
+void service::close(uint32_t tunnel_id, uint32_t conn_id)
+{
+    auto l = find_listener(tunnel_id);
+
+    if (l)
+    {
+        return l->stop(conn_id);
     }
 }
 

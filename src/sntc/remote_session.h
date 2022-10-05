@@ -34,6 +34,7 @@ public:
 
     uint32_t id() const { return conn_id_; }
 
+    void close();
     void write(const char *buffer, size_t size);
 
 private:

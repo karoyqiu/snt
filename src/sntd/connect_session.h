@@ -29,6 +29,7 @@ public:
     connect_session(session_manager *manager, sntc_ptr client, uint32_t conn_id, tcp::socket &&s);
 
     void start();
+    void close();
     void write(const uint8_t *buffer, size_t size);
 
 private:

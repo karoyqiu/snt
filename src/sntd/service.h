@@ -27,7 +27,9 @@ public:
 
     uint32_t listen(snt::Protocol protocol, uint16_t port);
 
-    void connected(uint32_t tunnel_id, uint32_t conn_id, int error);
+    void connected(uint32_t tunnel_id, uint32_t conn_id);
+
+    void close(uint32_t tunnel_id, uint32_t conn_id);
 
     size_t send(uint32_t tunnel_id, uint32_t conn_id, const RCF::ByteBuffer &data);
 
