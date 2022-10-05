@@ -1,5 +1,10 @@
 # 编译 RCF
+option(MUSL "Build with musl")
 add_library(rcf "src/RCF/RCF.cpp")
+
+if(MUSL)
+  target_compile_definitions(rcf PUBLIC __MUSL__)
+endif()
 
 if(BUILD_SHARED_LIBS)
   target_compile_definitions(rcf PRIVATE "RCF_BUILD_DLL")
@@ -16,9 +21,10 @@ target_compile_definitions(rcf PRIVATE
 
 if(WIN32)
   target_compile_definitions(rcf PRIVATE "_WIN32_WINNT=0x0601")
-elseif(UNIX)
+else()
   find_package(unofficial-libuuid CONFIG REQUIRED)
   target_link_libraries(rcf PRIVATE unofficial::UUID::uuid)
+  target_include_directories(rcf PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
 endif()
 
 target_include_directories(rcf PUBLIC "include")

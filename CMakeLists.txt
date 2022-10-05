@@ -10,7 +10,7 @@
 # \copyright   © 2022 Roy QIU。
 #
 #*************************************************************************************************/
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.21)
 
 # 设置全局变量
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")

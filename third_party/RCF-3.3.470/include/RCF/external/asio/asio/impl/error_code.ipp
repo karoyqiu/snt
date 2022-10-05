@@ -97,9 +97,10 @@ public:
 #if defined(__sun) || defined(__QNX__) || defined(__SYMBIAN32__)
     using namespace std;
     return strerror(value);
-#elif defined(__MACH__) && defined(__APPLE__) \
+#elif (defined(__MACH__) && defined(__APPLE__)) \
   || defined(__NetBSD__) || defined(__FreeBSD__) || defined(__OpenBSD__) \
   || defined(_AIX) || defined(__hpux) || defined(__osf__) \
+  || defined(__MUSL__) \
   || defined(__ANDROID__)
     char buf[256] = "";
     using namespace std;

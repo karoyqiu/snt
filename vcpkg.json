@@ -6,7 +6,10 @@
       "name": "libuuid",
       "platform": "linux"
     },
-    "openssl",
+    {
+      "name": "openssl",
+      "platform": "!linux"
+    },
     "spdlog",
     "yaml-cpp"
   ]
