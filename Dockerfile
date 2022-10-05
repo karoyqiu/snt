@@ -8,9 +8,11 @@ RUN git clone --depth=1 https://kgithub.com/microsoft/vcpkg.git /vcpkg && /vcpkg
 RUN mkdir /src /out && /vcpkg/vcpkg install spdlog yaml-cpp libuuid
 
 COPY . /src
-RUN cmake -GNinja -DCMAKE_TOOLCHAIN_FILE=/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release -DMUSL=ON -S /src -B /out && cmake --build /out 
+RUN cmake -GNinja -DCMAKE_TOOLCHAIN_FILE=/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release -DMUSL=ON -S /src -B /out \
+    && cmake --build /out \
+    && cmake --install /out --strip
 
 # 运行
 FROM alpine
-COPY --from=build /out/sntd /usr/bin
+COPY --from=build /usr/local/bin/sntd /usr/bin
 CMD ["/usr/bin/sntd"]

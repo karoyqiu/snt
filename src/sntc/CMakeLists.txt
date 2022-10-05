@@ -8,3 +8,5 @@ target_link_libraries(sntc PRIVATE
   yaml-cpp
   sntcommon
 )
+
+install(TARGETS sntc)
